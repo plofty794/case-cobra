@@ -1,13 +1,22 @@
 "use client";
 import { useFormState } from "react-dom";
 import { phoneCaseUploadAction } from "./actions";
-import { FormHTMLAttributes, LegacyRef, MutableRefObject, useRef } from "react";
+import { ReactNode, useRef } from "react";
+import { revalidatePath } from "next/cache";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface ImagePreview extends File {
   preview: string;
 }
 
-function Form() {
+function Form({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [state, action] = useFormState(phoneCaseUploadAction, {
     message: "",
@@ -17,7 +26,17 @@ function Form() {
     formRef.current?.reset();
   }
 
-  return <form ref={formRef} action={action}></form>;
+  if (state.message !== "success") {
+    toast.warning("Oops! Failed to upload the image", {
+      description: "Refresh the page and try again.",
+    });
+  }
+
+  return (
+    <form className={cn("h-full", className)} ref={formRef} action={action}>
+      {children}
+    </form>
+  );
 }
 
 export default Form;

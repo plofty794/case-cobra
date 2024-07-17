@@ -1,6 +1,5 @@
 "user server";
 import { v2 as cloudinary } from "cloudinary";
-import { revalidatePath } from "next/cache";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -27,11 +26,22 @@ export async function phoneCaseUploadAction(
   },
   formData: FormData
 ) {
-  const image = formData.get("image");
+  "use server";
 
+  const file = formData.get("image") as File;
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = new Uint8Array(arrayBuffer);
   try {
-    await Promise.resolve(() => {
-      setTimeout(() => {}, 1000);
+    await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({}, function (error, result) {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve(result);
+        })
+        .end(buffer);
     });
 
     return {
