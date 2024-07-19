@@ -1,3 +1,5 @@
+import { AxiosResponse } from "axios";
+
 export type TCloudinaryResponse = {
   asset_id: string;
   bytes: number;
@@ -19,3 +21,9 @@ export type TCloudinaryResponse = {
   version_id: string;
   width: number;
 };
+
+export interface ImageUploadResponse extends AxiosResponse {
+  data: {
+    message: string;
+  };
+}

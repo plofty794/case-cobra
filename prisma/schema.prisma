@@ -16,7 +16,7 @@ datasource db {
 
 model PhoneCasePhoto {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  photoUrl  String
+  imageUrl  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

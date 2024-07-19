@@ -24,13 +24,15 @@ function Page() {
   useEffect(() => {
     if (isPending) {
       setIsUploading(true);
-      setUploadProgress(60);
+      setUploadProgress(40);
     }
 
     if (isSuccess) {
-      setUploadProgress(80);
-      setIsUploading(false);
-      router.push(`/configure/upload/${data.public_id}`);
+      startTransition(() => {
+        setIsUploading(false);
+        setUploadProgress(80);
+        router.push(`/configure/design?public_id=${data.public_id}`);
+      });
     }
 
     if (isError) {
@@ -124,14 +126,6 @@ function Page() {
                   <p className="text-xs text-zinc-500">PNG, JPEG, JPG</p>
                 </div>
               )}
-              {/* {image && (
-                <div className="py-8">
-                  <Phone
-                    imgSrc={image.preview}
-                    className="flex-1 w-96 h-full rounded-xl"
-                  />
-                </div>
-              )} */}
             </div>
           )}
         </DropZone>
