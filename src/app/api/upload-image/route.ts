@@ -1,5 +1,5 @@
+import { db } from "@/app/db";
 import checkLinks from "check-links";
-import prisma from "../../../../prisma";
 import { NextResponse } from "next/server";
 
 type LinkCheckResult = {
@@ -9,10 +9,14 @@ type LinkCheckResult = {
 
 type UploadImageBody = {
   imageUrl: string;
+  width: number;
+  height: number;
+  public_id: string;
 };
 
 export const POST = async (req: Request) => {
-  const { imageUrl }: UploadImageBody = await req.json();
+  const { imageUrl, height, width, public_id }: UploadImageBody =
+    await req.json();
   try {
     const results = await checkLinks([imageUrl]);
     if (results["YES"] != null) {
@@ -23,9 +27,12 @@ export const POST = async (req: Request) => {
         }
       );
     }
-    const image = await prisma.phoneCasePhoto.create({
+    const image = await db.phoneCasePhoto.create({
       data: {
         imageUrl,
+        height,
+        width,
+        public_id,
       },
     });
 
@@ -40,7 +47,6 @@ export const POST = async (req: Request) => {
       }
     );
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       { messsage: (error as Error).message },
       {

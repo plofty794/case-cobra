@@ -15,8 +15,12 @@ datasource db {
 }
 
 model PhoneCasePhoto {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  imageUrl  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  public_id       String
+  imageUrl        String
+  width           Int
+  height          Int
+  croppedImageUrl String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

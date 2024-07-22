@@ -28,6 +28,9 @@ function useUploadImage() {
     onSuccess: async (cloduinaryResponse) => {
       const res: ImageUploadResponse = await axiosRoute.post("/upload-image", {
         imageUrl: cloduinaryResponse.secure_url,
+        width: cloduinaryResponse.width,
+        height: cloduinaryResponse.height,
+        public_id: cloduinaryResponse.public_id,
       });
       toast.success(res.data.message);
     },

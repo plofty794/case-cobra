@@ -29,8 +29,8 @@ function Page() {
 
     if (isSuccess) {
       startTransition(() => {
-        setIsUploading(false);
         setUploadProgress(80);
+        setIsUploading(false);
         router.push(`/configure/design?public_id=${data.public_id}`);
       });
     }
@@ -104,6 +104,7 @@ function Page() {
                     value={uploadProgress}
                     className="w-40 h-2 bg-gray-300"
                   />
+                  <p className="text-xs text-zinc-500">PNG, JPEG, JPG</p>
                 </div>
               )}
               {isLoading && (
