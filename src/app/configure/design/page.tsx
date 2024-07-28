@@ -1,5 +1,4 @@
-import { db } from "@/app/db";
-import Image from "next/image";
+import { db } from "@/db";
 import { notFound } from "next/navigation";
 import DesignConfigurator from "./DesignConfigurator";
 

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
-import useUploadImage from "./useUploadImage";
+import { useUploadImage } from "@/hooks/image-hooks";
 import { useRouter } from "next/navigation";
 
 function Page() {
@@ -31,7 +31,7 @@ function Page() {
       startTransition(() => {
         setUploadProgress(80);
         setIsUploading(false);
-        router.push(`/configure/design?public_id=${data.public_id}`);
+        router.push(`/configure/design?public_id=${data.data.public_id}`);
       });
     }
 
@@ -39,7 +39,7 @@ function Page() {
       setIsUploading(false);
       setUploadProgress(0);
     }
-  }, [isPending, isError, isSuccess, router, data?.public_id]);
+  }, [isPending, isError, isSuccess, router, data?.data.public_id]);
 
   const onDropRejected = (fileRejections: FileRejection[]) => {
     switch (fileRejections[0].errors[0].code) {
@@ -52,7 +52,7 @@ function Page() {
 
     setIsDraggingOver(false);
   };
-  const onDropAccepted = <T extends File>(files: T[]) => {
+  const onDropAccepted = (files: File[]) => {
     mutate(files[0]);
     setIsDraggingOver(false);
   };
@@ -85,7 +85,7 @@ function Page() {
               className="h-full w-full flex-1 flex flex-col items-center justify-center hover:cursor-pointer"
               {...getRootProps()}
             >
-              <input {...getInputProps()} />
+              <input type="file" name="image" {...getInputProps()} />
               {isDraggingOver && (
                 <>
                   <MousePointerSquareDashedIcon className="animate-bounce size-6 text-zinc-500 mb-2" />

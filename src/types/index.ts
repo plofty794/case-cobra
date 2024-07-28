@@ -27,3 +27,7 @@ export interface ImageUploadResponse extends AxiosResponse {
     message: string;
   };
 }
+
+export interface ImageFileWithPreview extends File {
+  preview: string;
+}

@@ -1,6 +1,6 @@
-import { db } from "@/app/db";
+import { db } from "@/db";
+import { NextRequest, NextResponse } from "next/server";
 import checkLinks from "check-links";
-import { NextResponse } from "next/server";
 
 type LinkCheckResult = {
   status: string;
@@ -8,17 +8,17 @@ type LinkCheckResult = {
 };
 
 type UploadImageBody = {
-  imageUrl: string;
-  width: number;
+  secure_url: string;
   height: number;
+  width: number;
   public_id: string;
 };
 
 export const POST = async (req: Request) => {
-  const { imageUrl, height, width, public_id }: UploadImageBody =
+  const { secure_url, height, width, public_id }: UploadImageBody =
     await req.json();
   try {
-    const results = await checkLinks([imageUrl]);
+    const results = await checkLinks([secure_url]);
     if (results["YES"] != null) {
       return NextResponse.json(
         { messsage: results["YES"].status },
@@ -27,23 +27,82 @@ export const POST = async (req: Request) => {
         }
       );
     }
-    const image = await db.phoneCasePhoto.create({
+
+    const phoneCasePhoto = await db.phoneCasePhoto.create({
       data: {
-        imageUrl,
+        imageUrl: secure_url,
         height,
         width,
         public_id,
       },
     });
 
-    if (!image) {
-      throw new Error();
+    if (!phoneCasePhoto) {
+      return NextResponse.json(
+        { message: "Failed to upload your image" },
+        {
+          status: 400,
+        }
+      );
     }
 
     return NextResponse.json(
-      { message: "Image has been uploaded" },
+      { message: "Image has been uploaded", public_id },
       {
         status: 201,
+      }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: (error as Error).message },
+      {
+        status: 500,
+      }
+    );
+  }
+};
+
+type TConfigureImage = {
+  croppedImageUrl: string;
+};
+
+export const PATCH = async (req: NextRequest) => {
+  const searchParams = req.nextUrl.searchParams;
+  const { croppedImageUrl }: TConfigureImage = await req.json();
+  const public_id = searchParams.get("public_id");
+  try {
+    if (!public_id) {
+      return NextResponse.json(
+        {
+          message: "Bad Request",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const phoneCasePhoto = await db.phoneCasePhoto.findFirst({
+      where: {
+        public_id,
+      },
+    });
+
+    await db.phoneCasePhoto.update({
+      where: {
+        id: phoneCasePhoto?.id,
+      },
+      data: {
+        croppedImageUrl,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: "Image has been configured",
+      },
+      {
+        status: 200,
       }
     );
   } catch (error) {
