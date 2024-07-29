@@ -88,14 +88,15 @@ export const PATCH = async (req: NextRequest) => {
       },
     });
 
-    await db.phoneCasePhoto.update({
-      where: {
-        id: phoneCasePhoto?.id,
-      },
-      data: {
-        croppedImageUrl,
-      },
-    });
+    phoneCasePhoto &&
+      (await db.phoneCasePhoto.update({
+        where: {
+          id: phoneCasePhoto?.id,
+        },
+        data: {
+          croppedImageUrl,
+        },
+      }));
 
     return NextResponse.json(
       {

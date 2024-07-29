@@ -50,13 +50,14 @@ export function useUploadCroppedImage() {
     },
     onSuccess() {
       toast.success("Image has been configured");
-      router.push(`/`);
+      router.push(`/configure/preview`);
     },
     onError(error) {
       toast.error(
         (error as AxiosError<{ message: string }>).response?.data.message,
         {
-          description: "Please try again.",
+          description:
+            "There was a problem saving your config, please try again.",
         }
       );
     },

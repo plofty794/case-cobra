@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSearchParams } from "next/navigation";
 import { useUploadCroppedImage } from "@/hooks/image-hooks";
+import { toast } from "sonner";
 
 export interface DesignConfiguratorProps {
   imageUrl: string;
@@ -59,50 +60,57 @@ function DesignConfigurator({
   const containerRef = useRef<HTMLDivElement>(null);
 
   async function saveConfiguration() {
-    const {
-      left: caseLeft,
-      top: caseTop,
-      width,
-      height,
-    } = phoneCaseRef.current!.getBoundingClientRect();
+    try {
+      const {
+        left: caseLeft,
+        top: caseTop,
+        width,
+        height,
+      } = phoneCaseRef.current!.getBoundingClientRect();
 
-    const { left: containerLeft, top: containerTop } =
-      containerRef.current!.getBoundingClientRect();
+      const { left: containerLeft, top: containerTop } =
+        containerRef.current!.getBoundingClientRect();
 
-    const leftOffset = caseLeft - containerLeft;
-    const topOffset = caseTop - containerTop;
+      const leftOffset = caseLeft - containerLeft;
+      const topOffset = caseTop - containerTop;
 
-    const actualX = renderedPosition.x - leftOffset;
-    const actualY = renderedPosition.y - topOffset;
+      const actualX = renderedPosition.x - leftOffset;
+      const actualY = renderedPosition.y - topOffset;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d");
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
 
-    const userImage = new Image();
-    userImage.crossOrigin = "anonymous";
-    userImage.src = imageUrl;
-    await new Promise((resolve) => (userImage.onload = resolve));
+      const userImage = new Image();
+      userImage.crossOrigin = "anonymous";
+      userImage.src = imageUrl;
+      await new Promise((resolve) => (userImage.onload = resolve));
 
-    ctx?.drawImage(
-      userImage,
-      actualX,
-      actualY,
-      renderedDimension.width,
-      renderedDimension.height
-    );
+      ctx?.drawImage(
+        userImage,
+        actualX,
+        actualY,
+        renderedDimension.width,
+        renderedDimension.height
+      );
 
-    const base64 = canvas.toDataURL();
-    const base64Data = base64.split(",")[1];
+      const base64 = canvas.toDataURL();
+      const base64Data = base64.split(",")[1];
 
-    const blob = base64ToBlob(base64Data, "image/png");
-    const file = new File([blob], "filename.png", { type: "image/png" });
-    const public_id = params.get("public_id");
-    public_id && mutate({ imageFile: file, public_id });
+      const blob = base64ToBlob(base64Data, "image/png");
+      const file = new File([blob], "filename.png", { type: "image/png" });
+      const public_id = params.get("public_id");
+      public_id && mutate({ imageFile: file, public_id });
+    } catch (error) {
+      toast.error("Something went wrong", {
+        description:
+          "There was a problem saving your config, please try again.",
+      });
+    }
   }
 
-  function base64ToBlob(base64: string, mimeType: string) {
+  function base64ToBlob(base64: string, mimeType: string) { 
     const byteCharacters = atob(base64);
     const byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
