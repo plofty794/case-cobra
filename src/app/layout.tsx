@@ -19,17 +19,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReactQueryClientProvider>
-      <html lang="en">
-        <body className={figtree.className}>
-          <NavigationMenu />
-          <main className="flex flex-col min-h-[100dvh]">
-            <div className="flex-1 flex flex-col h-full">{children}</div>
-            <Footer />
-          </main>
-          <Toaster richColors closeButton position="top-center" theme="light" />
-        </body>
-      </html>
-    </ReactQueryClientProvider>
+    <html lang="en">
+      <body className={figtree.className}>
+        <NavigationMenu />
+        <main className="flex flex-col min-h-[100dvh]">
+          <div className="flex-1 flex flex-col h-full">
+            <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+          </div>
+          <Footer />
+        </main>
+        <Toaster richColors closeButton position="top-center" theme="light" />
+      </body>
+    </html>
   );
 }

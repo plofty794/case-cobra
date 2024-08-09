@@ -14,13 +14,48 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum OrderStatus {
+  shipped
+  awaiting_shipment
+  fulfilled
+}
+
+enum PhoneModel {
+  iphonex
+  iphone11
+  iphone12
+  iphone13
+  iphone14
+  iphone15
+}
+
+enum CaseMaterial {
+  silicone
+  polycarbonate
+}
+
+enum CaseFinish {
+  smooth
+  textured
+}
+
+enum CaseColor {
+  black
+  blue
+  rose
+}
+
 model PhoneCasePhoto {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
   public_id       String
   imageUrl        String
   width           Int
   height          Int
+  model           PhoneModel?
+  finish          CaseFinish?
+  material        CaseMaterial?
+  caseColor       CaseColor?
   croppedImageUrl String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }

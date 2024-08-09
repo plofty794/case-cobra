@@ -114,7 +114,7 @@ function ReviewGrid() {
   const columns = splitArray(PHONES, 3);
   const column1 = columns[0];
   const column2 = columns[1];
-  const column3 = splitArray(columns[2], 2);
+  const column3 = columns[2];
 
   return (
     <div
@@ -124,7 +124,7 @@ function ReviewGrid() {
       {isInView ? (
         <>
           <ReviewColumn
-            reviews={[...column1, ...column3.flat(), ...column2]}
+            reviews={[...column1, ...column3, ...column2]}
             reviewClassName={(reviewIndex) =>
               cn({
                 "md:hidden": reviewIndex >= column1.length + column3[0].length,
@@ -134,7 +134,7 @@ function ReviewGrid() {
             msPerPixel={10}
           />
           <ReviewColumn
-            reviews={[...column2, ...column3[1]]}
+            reviews={[...column2, ...column3]}
             className="hidden md:block"
             reviewClassName={(reviewIndex) =>
               reviewIndex >= column2.length ? "lg:hidden" : ""
@@ -142,7 +142,7 @@ function ReviewGrid() {
             msPerPixel={15}
           />
           <ReviewColumn
-            reviews={column3.flat()}
+            reviews={[...column3]}
             className="hidden md:block"
             msPerPixel={10}
           />

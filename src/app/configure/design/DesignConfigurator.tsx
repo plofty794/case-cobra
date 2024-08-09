@@ -33,7 +33,7 @@ function DesignConfigurator({
   width,
 }: DesignConfiguratorProps) {
   const params = useSearchParams();
-  const { mutate } = useUploadCroppedImage();
+  const { mutate, isPending } = useUploadCroppedImage();
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
     model: (typeof MODELS.options)[number];
@@ -101,7 +101,17 @@ function DesignConfigurator({
       const blob = base64ToBlob(base64Data, "image/png");
       const file = new File([blob], "filename.png", { type: "image/png" });
       const public_id = params.get("public_id");
-      public_id && mutate({ imageFile: file, public_id });
+
+      const { color, finish, material, model } = options;
+      public_id &&
+        mutate({
+          imageFile: file,
+          public_id,
+          caseColor: color.value,
+          finish: finish.value,
+          material: material.value,
+          model: model.value,
+        });
     } catch (error) {
       toast.error("Something went wrong", {
         description:
@@ -110,7 +120,7 @@ function DesignConfigurator({
     }
   }
 
-  function base64ToBlob(base64: string, mimeType: string) { 
+  function base64ToBlob(base64: string, mimeType: string) {
     const byteCharacters = atob(base64);
     const byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
@@ -358,6 +368,7 @@ function DesignConfigurator({
               </p>
 
               <Button
+                disabled={isPending}
                 onClick={async () => await saveConfiguration()}
                 size="sm"
                 className="w-full"

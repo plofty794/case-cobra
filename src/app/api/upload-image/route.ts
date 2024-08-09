@@ -1,11 +1,7 @@
 import { db } from "@/db";
 import { NextRequest, NextResponse } from "next/server";
 import checkLinks from "check-links";
-
-type LinkCheckResult = {
-  status: string;
-  link: string;
-};
+import { PhoneCasePhoto } from "@prisma/client";
 
 type UploadImageBody = {
   secure_url: string;
@@ -15,8 +11,14 @@ type UploadImageBody = {
 };
 
 export const POST = async (req: Request) => {
-  const { secure_url, height, width, public_id }: UploadImageBody =
-    await req.json();
+  const {
+    secure_url,
+    height,
+    width,
+    public_id,
+  }: Pick<PhoneCasePhoto, "height" | "width" | "public_id"> & {
+    secure_url: string;
+  } = await req.json();
   try {
     const results = await checkLinks([secure_url]);
     if (results["YES"] != null) {
@@ -62,13 +64,18 @@ export const POST = async (req: Request) => {
   }
 };
 
-type TConfigureImage = {
-  croppedImageUrl: string;
-};
-
 export const PATCH = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
-  const { croppedImageUrl }: TConfigureImage = await req.json();
+  const {
+    croppedImageUrl,
+    caseColor,
+    finish,
+    material,
+    model,
+  }: Pick<
+    PhoneCasePhoto,
+    "croppedImageUrl" | "caseColor" | "finish" | "material" | "model"
+  > = await req.json();
   const public_id = searchParams.get("public_id");
   try {
     if (!public_id) {
@@ -95,6 +102,10 @@ export const PATCH = async (req: NextRequest) => {
         },
         data: {
           croppedImageUrl,
+          caseColor,
+          finish,
+          material,
+          model,
         },
       }));
 
